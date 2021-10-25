@@ -33,7 +33,9 @@ class Create_Csv_File {
     function create_file() {
 
         if (!$handle = fopen($this->filepath, 'w')) {
-            exit;
+            $this->result = false;
+            echo "Impossible de créer le fichier ($this->filepath)";
+            exit("Cannot create file");
         }
 
         /** Ecriture de la première ligne */
