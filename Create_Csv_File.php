@@ -4,19 +4,26 @@ class Create_Csv_File {
 
     private $filepath = '';
 
+    private $full_host = '';
+
     private $first_line = '';
 
     private $data = [];
 
     private $delimiter = ';';
 
-    private $result = true;
+    private $success = true;
+
+    private $msg = '';
 
 
-    function __construct($data, $filepath, $first_line = '') {
+    function __construct($data, $filepath, $full_host, $first_line = '') {
 
         $this->data = $data;
+
         $this->filepath = $filepath;
+        $this->full_host = $full_host;
+
         $this->first_line = $this->set_first_line($first_line);        
 
     }
@@ -33,16 +40,22 @@ class Create_Csv_File {
     function create_file() {
 
         if (!$handle = fopen($this->filepath, 'w')) {
-            $this->result = false;
-            echo "Impossible de créer le fichier ($this->filepath)";
-            exit("Cannot create file");
+            
+            $this->success = false;
+            $this->msg = "Impossible de créer le fichier ($this->filepath)";
+
+            return $this->get_response();
         }
 
         /** Ecriture de la première ligne */
         if (!empty($this->first_line)) {
 
             if (fwrite($handle, $this->first_line . "\r\n") === false) {
-                echo "Impossible d'écrire dans le fichier ($this->filepath)";
+
+                $this->success = false;
+                $this->msg = "Impossible d'écrire dans le fichier ($this->filepath)";
+
+                return $this->get_response();
             }
         }
 
@@ -57,12 +70,23 @@ class Create_Csv_File {
 
         fclose($handle);
 
-        return ($this->result) ? $this->filepath : $this->result;
+        return $this->get_response();
     }
 
 
     function get_result() {
         return $this->result;
+    }
+
+
+    function get_response() {
+
+        return [
+            'success' => $this->success,
+            'msg' => $this->msg,
+            'filepath' => $this->filepath,
+            'full_host' => $this->full_host
+        ];
     }
 
 
