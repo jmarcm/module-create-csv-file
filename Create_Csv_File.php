@@ -2,11 +2,15 @@
 
 class Create_Csv_File {
 
+    private $filename = '';
+
     private $filepath = '';
 
     private $full_host = '';
 
     private $first_line = '';
+
+    private $date = '';
 
     private $data = [];
 
@@ -17,13 +21,19 @@ class Create_Csv_File {
     private $msg = '';
 
 
-    function __construct($data, $filepath, $full_host, $first_line = '') {
+    function __construct($params) {
 
-        $this->data = $data;
+        foreach ($params as $key => $value) {
 
-        $this->filepath = $filepath;
-        $this->full_host = $full_host;
+            $this->$key = $value;
+        }
 
+        // $this->data = $data;
+
+        // $this->filepath = $filepath;
+        // $this->full_host = $full_host;
+
+        $first_line = $params['first_line'] ?? '';
         $this->first_line = $this->set_first_line($first_line);        
 
     }
@@ -84,8 +94,10 @@ class Create_Csv_File {
         return [
             'success' => $this->success,
             'msg' => $this->msg,
+            'filename' => $this->filename,
             'filepath' => $this->filepath,
-            'full_host' => $this->full_host
+            'full_host' => $this->full_host,
+            'date' => $this->date
         ];
     }
 
