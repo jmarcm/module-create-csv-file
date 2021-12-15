@@ -21,6 +21,17 @@ class Create_Csv_File {
     private $msg = '';
 
 
+    /**
+     * Construct function
+     *
+     * @param array $params
+     *  - filename
+     *  - filepath
+     *  - full_host
+     *  - first_line
+     *  - date
+     *  - data
+     */
     function __construct($params) {
 
         foreach ($params as $key => $value) {
@@ -28,23 +39,26 @@ class Create_Csv_File {
             $this->$key = $value;
         }
 
-        // $this->data = $data;
-
-        // $this->filepath = $filepath;
-        // $this->full_host = $full_host;
-
         $first_line = $params['first_line'] ?? '';
         $this->first_line = $this->set_first_line($first_line);        
 
     }
 
 
+    /**
+     * Crée l'en-tête du fichier
+     * en l'encodant
+     *
+     * @param string $first_line
+     * @return string
+     */
     private function set_first_line($first_line) {
 
         $first_line = explode($this->delimiter, $first_line);
-
+        
         return $this->first_line = implode($this->delimiter, array_map([$this, 'encode_field'], $first_line));
     }
+
 
 
     function create_file() {
@@ -109,13 +123,19 @@ class Create_Csv_File {
             return $field;
         }
         
+        // supprime les espaces inutiles
         $field = trim($field);
 
-        $field = str_replace('\\"','"',$field);
+        // $field = str_replace('\\"','"',$field);
 
         // $field = str_replace('"','\"',$field);
+        
+        if ( strpos($field, '"') !== false ) {
 
-        return '"'. $field . '"';
+            $field = '"'. $field . '"';
+        }
+
+        return $field;
 
     }
     
