@@ -146,6 +146,13 @@ class Create_Csv_File {
     }
 
 
+    /**
+     * N'encode que les champs qui comportent des guillemets
+     * en les entourant de guillemets
+     *
+     * @param string $field
+     * @return string
+     */
     private function encode_fields_with_double_quotes($field) {
 
         if (empty($field))  {
