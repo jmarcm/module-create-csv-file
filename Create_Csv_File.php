@@ -20,6 +20,10 @@ class Create_Csv_File {
 
     private $msg = '';
 
+    private $default_encode_function_name = 'encode_field';
+    
+    private $encode_function_name = '';
+
 
     /**
      * Construct function
@@ -31,6 +35,7 @@ class Create_Csv_File {
      *  - first_line
      *  - date
      *  - data
+     *  - nom du type d'encodage
      */
     function __construct($params) {
 
@@ -40,7 +45,9 @@ class Create_Csv_File {
         }
 
         $first_line = $params['first_line'] ?? '';
-        $this->first_line = $this->set_first_line($first_line);        
+        $this->first_line = $this->set_first_line($first_line);
+        
+        $this->encode_function_name = $params['encode_function_name'] ?? $this->default_encode_function_name;
 
     }
 
@@ -56,7 +63,10 @@ class Create_Csv_File {
 
         $first_line = explode($this->delimiter, $first_line);
         
-        return $this->first_line = implode($this->delimiter, array_map([$this, 'encode_field'], $first_line));
+        return $this->first_line = implode(
+            $this->delimiter,
+            array_map([$this, $this->encode_function_name], $first_line)
+        );
     }
 
 
@@ -86,7 +96,7 @@ class Create_Csv_File {
         /** Ecriture des lignes de données */
         foreach ($this->data as $row) {
 
-            if (fwrite($handle, implode($this->delimiter, array_map([$this, 'encode_field'], $row)) . "\r\n") === false ) {
+            if (fwrite($handle, implode($this->delimiter, array_map([$this, $this->encode_function_name], $row)) . "\r\n") === false ) {
                 $this->result = false;
             }
 
@@ -111,7 +121,8 @@ class Create_Csv_File {
             'filename' => $this->filename,
             'filepath' => $this->filepath,
             'full_host' => $this->full_host,
-            'date' => $this->date
+            'date' => $this->date,
+            'encode_function_name' => $this->encode_function_name
         ];
     }
 
@@ -126,13 +137,28 @@ class Create_Csv_File {
         // supprime les espaces inutiles
         $field = trim($field);
 
-        // $field = str_replace('\\"','"',$field);
+        $field = str_replace('\\"','"',$field);
 
         // $field = str_replace('"','\"',$field);
+
+        return $field;
+
+    }
+
+
+    private function encode_fields_with_double_quotes($field) {
+
+        if (empty($field))  {
+
+            return $field;
+        }
+        
+        // supprime les espaces inutiles
+        $field = trim($field);
         
         if ( strpos($field, '"') !== false ) {
 
-            $field = '"'. $field . '"';
+            $field = '"' . $field . '"';
         }
 
         return $field;
