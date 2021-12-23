@@ -20,7 +20,7 @@ class Create_Csv_File {
 
     private $msg = '';
 
-    private $default_encode_function_name = 'encode_field';
+    private $default_encode_function_name = 'no_encode_fields';
     
     private $encode_function_name = '';
 
@@ -124,6 +124,21 @@ class Create_Csv_File {
             'date' => $this->date,
             'encode_function_name' => $this->encode_function_name
         ];
+    }
+
+
+    /** Les fonctions d'encodage */
+
+    /**
+     * N'applique pas d'encodage
+     * Fonction par défaut
+     *
+     * @param string $field
+     * @return string
+     */
+    private function no_encode_fields($field) {
+
+        return $field;
     }
 
 
